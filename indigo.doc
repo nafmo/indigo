@@ -1,0 +1,319 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+        Ûß          Ûß Ü  Û       Û       Û               TM
+        ÛÜÜÜÜ ÜÜÜÜÜ ÛÜ ÛÜ Û   Û   Û ÜÜÜÜÜ Û Ü Ü ÜÜÜÜ  ÜÜ
+            Û Û   Û Û  Û  Û   Û   Û Û   Û Û Û Û ÛÜÜÛ  ÛÜÜÜÜ
+        ÜÜÜÜÛ ÛÜÜÜÛ Û  ÛÜ ÛÜÜÜÛÜÜÜÛ ÛÜÜÜÛ Û ßÜß ÛÜÜÜÜ ÜÜÜÜÛ
+      Ä     S     O     F     T     W     A     R     E     Ä
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Indigo v0.01 - Tool for setting up a point system with Blue Wave
+
+Copyright (c) 1997: Peter Karlsson
+A Softwolves Software(TM) Release in 1997
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc., 675
+Mass Ave, Cambridge, MA 02139, USA.
+
+This product uses the SPAWNO routines by Ralf Brown to minimize memory use
+while shelling to DOS and running other programs. This library is not
+released under the GNU Public License. According to its licensing terms,
+the whole SPAWNO archive is included with this program.
+
+If you modify this program, please do send a copy of the modified program
+to the original author, so that I can incorporate your changes to the main
+version.
+
+        Included files
+        ÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+* C++ source files:
+AREAS.CPP, CONFIG.CPP, CRC32.CPP, FIDO.CPP, INDIGO.CPP, MSGID.CPP,
+SHORTTAG.CPP, UPLINK.CPP
+
+* C++ header files:
+AREAS.H, BLUEWAVE.H, CONFIG.H, CRC32.H, DATATYP.H, DEBUG.H, FIDO.H,
+MSGID.H, PKTHEAD.H, SHORTTAG.H, UPLINK.H, VERSION.H
+
+* Other source related files:
+MAKEFILE, MAKEFILE.OS2, INDIGO.DEF
+
+* Documentation:
+INDIGO.DOC, COPYING
+
+* Executables:
+INDIGO.EXE (DOS), INDIGOP.EXE (OS/2)
+
+* SPAWNO libraries:
+SPWNO413.RAR
+
+        Usage
+        ÄÄÄÄÄ
+
+To use Indigo, you need to have the following software available:
+
+* A Binkley-style Fidonet mailer (BinkleyTerm, Xenia, Terminate, and
+  others). Support for ArcMail Attach mailers is not included in this
+  release.
+* A Blue Wave compatible mail reader, capable of creating UPL files in
+  reply packets.
+* Archiving and unarchiving software.
+* A text editor.
+
+
+        Command line format
+        ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+indigo [options] {direction} {parameters}
+
+    Options
+    -------
+
+-iconfigfile - Use "configfile" instead of "indigo.cfg"
+
+    "In" direction (Blue Wave packet creation)
+    ------------------------------------------
+
+indigo [options] IN pktfile ...
+
+pktfile - *.PKT files to be converted into Blue Wave packets. Wildcards may
+          be specified. You can add as many pktfile specifications as you
+          wish.
+
+    "Out" direction (Blue Wave reply packet handling)
+    -------------------------------------------------
+
+indigo [options] OUT newfile
+
+newfile - *.NEW file to be converted into an outbound PKT file.
+
+        Configuration file format
+        ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+The configuration file is divided into three sections, which are indicated
+by the use of a header on the format
+
+  [Title]
+
+where Title is the name of the section. The sections are: "Global",
+"Uplinks" and "Areas". They will be described in detail below.
+
+Inside each section, the configuration data is written in this format:
+
+  Keyword=Value
+
+or, with keywords requiring more than one value:
+
+  Keyword=Value1,Value2 {and so on ...}
+
+Comments can be written on lines beginning with a semicolon (;). Empty
+lines are ignored.
+
+    The [Global] section
+    --------------------
+
+In the section following the [Global] header, the following configuration
+keywords can be used:
+
+ Outbound (required)
+
+Defines the outbound directory used by your mailer and the default zone
+number. The two values are separated by commas. There should be no trailing
+backslash in the path name.
+
+ Origin (optional)
+
+Defines the text that is to be used on the Origin line. If you leave it
+out, your Origin line will be empty. Do not include your address, it will
+be appended automatically.
+
+ Name (required)
+
+Defines the user name that is to be used for the packet. It is also used to
+indicate personal mail.
+
+ NetMail (optional)
+
+Defines the title for the netmail areas. If you leave it out, they will be
+called "NetMail". The addresses for the netmail areas are appended
+automatically.
+
+ BadMail (optional)
+
+Defines the title for the badmail area (the one where messages in
+non-defined areas will be saved). If you leave it out, it will be called
+"Bad mail".
+
+ BaseName (required)
+
+Defines the base name that is to be used for the Blue Wave packet. Indigo
+will append a three-digit number to this base name.
+
+ Compress (required)
+
+This defines the name of the archiving software that will be used to
+compress the Blue Wave packet. The program needs two parameters, the mail
+packet name and the files to be included, and to provide for them, you have
+to add two "%s" tokens (without the quotes) to the command line. The first
+"%s" will be changed into the mail packet name, and the second into the
+source files.
+
+Here are some examples:
+
+Info-Zip Zip: zip -j9 %s %s
+PkZip 2.04g (DOS): pkzip -ex %s %s
+PkZip 2.50 (OS/2): pkzip /add /max %s %s
+ARJ: arj -jm a %s %s
+LHA (DOS): lha a %s %s
+LH2 (OS/2): lh2 a %s %s
+RAR: rar a %s %s
+
+ Decompress (required)
+
+This defines the name of the unarchiving software that will be used to
+decompress the Blue Wave reply packet. The program needs two parameters,
+the reply packet name and the destination directory, and to provide for
+them, you have to add two "%s" tokens (without the quotes) to the command
+line. The first "%s" will be changed into the reply packet name, and the
+second into the destionation directory.
+
+Here are some examples:
+
+Info-Zip UnZip: unzip %s -d %s
+PkUnZip 2.04g (DOS): pkunzip %s %s
+PkZip 2.50 (OS/2): pkzip /ext %s %s
+ARJ: arj e %s %s
+LHA (DOS): lha e %s %s\
+LH2 (OS/2): lh2 e %s %s
+RAR: rar e %s %s
+
+Please note that earlier versions of Info-Zip's UnZip lack the -d
+(destination directory) option. These version cannot be used with Indigo.
+
+ TempPath (optional)
+
+Defines the temporary directory to be used by the program. If you don't
+specify any, the one defined via the TEMP environment variable will be
+used. If none such is defined, the current directory will be used.
+
+ BWPath (required)
+
+Defines the path for the Blue Wave packet that is to be created.
+
+    The [Uplinks] section
+    ---------------------
+
+ Uplinks (required)
+
+Specifies how many uplinks are defined. This keyword must be the first one
+in this section.
+
+ Address (required, one per uplink)
+
+This keyword specifies the uplink data. It takes three parameters: Your
+address, the uplink address, and the PKT password that is to be used.
+
+    The [Areas] section
+    -------------------
+
+ Areas (required)
+
+Specifies how many areas are defined. This keyword must be the first one in
+this section.
+
+ {area tag} (required, one per area)
+
+Here you specify the areas that you download. The keyword in this section
+is the echo tag, and as it takes three parameters: The address you use for
+this echo, the Blue Wave area number (maximum of five characters allowed),
+and the title to be shown in the Blue Wave reader.
+
+        Sample configuaration
+        ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+[Global]
+Outbound=C:\BINKLEY\OUTBOUND,2
+Origin=My Point
+Name=Peter Karlsson
+NetMail=NetMail
+BadMail=Bad Mail
+BaseName=POINT
+Decompress=C:\UNZIP\UNZIP %s -d %s
+Compress=C:\ZIP\ZIP -j9 %s %s
+TempPath=C:\TEMP
+BWPath=C:\BWAVE\DOWN
+
+[Uplinks]
+Uplinks=1
+Address=2:206/221.1,2:206/221.0,PASSWORD
+
+[Areas]
+Areas=2
+BLUEWAVE=2:206/221.1,000,Blue Wave (Int'l)
+R20_BWAVE=2:206/221.1,001,Blue Wave (Swe)
+
+        Revision history
+        ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Version 0.01 (1997-12-14)
+* First release
+
+        Caveats
+        ÄÄÄÄÄÄÄ
+
+* If you use Blue Wave 2.12 or earlier, do not specify area numbers with
+  periods in them, since these versions use the area number as a base for
+  the message filenames.
+* If you specify the same area number for two areas, strange things will
+  occur in your reader (Indigo will not give a warning, or be affected by
+  this). Please note that the netmail areas and the badmail area
+  automatically get area numbers ("NE###", where ### is a three digit
+  number, for netmail areas, and "BAD" for the badmail area.
+* If you have a timezone defined (TZ environment variable), make sure the
+  same timezone is defined while running your Blue Wave reader as when you
+  are running Indigo. Otherwise, the time stamps of your outbound messages
+  may get wrong.
+
+        To do
+        ÄÄÄÄÄ
+
+* Remove all the bugs.
+* Automatic unarchiving of the incoming mail packets.
+* Support for ArcMailAttach style outbound (FrontDoor etc).
+* Multiple Origin lines (one per area).
+* Character set support (CHRS kludge), both for inbound (conversion) and
+  outbound (insertion of CHRS kludge) messages.
+* Clean up the code, make it more object-oriented, more generic, and less
+  dependent on certain structures in the files.
+* Linux/Unix port.
+
+        Compilers
+        ÄÄÄÄÄÄÄÄÄ
+
+The source has been compiled with Borland Turbo C++ 1.0 for the DOS
+version, and EMX/GNU C++ 0.9c for the OS/2 version.
+
+        Contact details
+        ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+The author of Indigo 0.01 can be reached via these means:
+
+Snailmail:      Peter Karlsson
+                V„rnsta, Ullers„ter
+                SE-718 92  FR™VI
+                Sweden
+
+Fido netmail:   Peter Karlsson, 2:206/221.0
+Internet mail:  pk@abc.se
+Fax:            +46-(0)21-132367
+
+Web page:       http://nafmo.home.ml.org/

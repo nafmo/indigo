@@ -1,0 +1,29 @@
+#DEBUG=-DDEBUG
+CCOPTS=-O2 -fomit-frame-pointer -s
+
+indigoP.exe: indigo.cpp areas.h pkthead.h bluewave.h debug.h config.h areas.o config.o fido.o uplink.o version.h shorttag.o crc32.o msgid.o indigo.def
+        gcc $(CCOPTS) $(DEBUG) -o indigoP.exe indigo.cpp areas.o fido.o config.o uplink.o shorttag.o crc32.o msgid.o indigo.def -lstdcpp -lbsd
+
+fido.o: fido.cpp areas.h fido.h debug.h
+        gcc -c $(CCOPTS) $(DEBUG) -o fido.o fido.cpp
+
+areas.o: areas.cpp areas.h fido.h debug.h shorttag.h
+        gcc -c $(CCOPTS) $(DEBUG) -o areas.o areas.cpp
+
+config.o: config.cpp config.h fido.h debug.h uplink.h areas.h
+        gcc -c $(CCOPTS) $(DEBUG) -o config.o config.cpp
+
+uplink.o: uplink.cpp uplink.h fido.h debug.h version.h shorttag.h
+        gcc -c $(CCOPTS) $(DEBUG) -o uplink.o uplink.cpp
+
+shorttag.o: shorttag.cpp shorttag.h crc32.h datatyp.h
+        gcc -c $(CCOPTS) $(DEBUG) -o shorttag.o shorttag.cpp
+
+crc32.o: crc32.cpp crc32.h
+        gcc -c $(CCOPTS) $(DEBUG) -o crc32.o crc32.cpp
+
+msgid.o: msgid.cpp msgid.h crc32.h datatyp.h
+        gcc -c $(CCOPTS) $(DEBUG) -o msgid.o msgid.cpp
+
+clean:
+        del *.o *.bak
